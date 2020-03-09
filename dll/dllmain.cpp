@@ -155,8 +155,6 @@ LRESULT CALLBACK MessageHook(int nCode, WPARAM wParam, LPARAM lParam)
 		))
 	{
 		ShowWindow(msg.hwnd, SW_HIDE);
-		// Show tray icon
-		StickTheIconWhereItBelongs(trayHwnd);
 		// Ignore this message
 		msg.message = WM_NULL;
 	}
