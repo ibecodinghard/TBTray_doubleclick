@@ -50,13 +50,34 @@ enum CommandID
 	ID_CLOSE
 };
 
+static void StickTheIconWhereItBelongs(HWND trayHwnd){
+	// Show tray icon
+	nid.cbSize = sizeof(nid);
+	nid.hWnd = trayHwnd;
+	nid.uID = 1337;
+	nid.uFlags = NIF_ICON | NIF_TIP | NIF_SHOWTIP | NIF_MESSAGE;
+	nid.uCallbackMessage = WM_USER + 1337;
+	nid.hIcon = (HICON)GetClassLongPtr(mainHwnd, GCLP_HICON);
+	lstrcpy(nid.szTip, _T("Mozilleriino Tray Iconnicus Regularis Sublimerella!"));
+	nid.dwState = 0;
+	nid.dwStateMask = 0;
+	lstrcpy(nid.szInfo, _T(""));
+	nid.uVersion = NOTIFYICON_VERSION_4;
+	lstrcpy(nid.szInfoTitle, _T(""));
+	nid.dwInfoFlags = 0;
+	nid.guidItem = {};
+	nid.hBalloonIcon = nid.hIcon;
+	Shell_NotifyIcon(NIM_ADD, &nid);
+	Shell_NotifyIcon(NIM_SETVERSION, &nid);
+}
+
 static LRESULT CALLBACK TrayIconProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if((uMsg == WM_USER + 1337 && LOWORD(lParam) == NIN_SELECT) || uMsg == WM_COMMAND)
 	{
 		// Restore main window
 		ShowWindow(mainHwnd, SW_SHOW);
-		Shell_NotifyIcon(NIM_DELETE, &nid);
+		// Shell_NotifyIcon(NIM_DELETE, &nid); // Not on my watch!
 		if (uMsg == WM_COMMAND && wParam == ID_CLOSE)
 			SendMessage(mainHwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
 		else
@@ -107,6 +128,7 @@ LRESULT CALLBACK MessageHook(int nCode, WPARAM wParam, LPARAM lParam)
 			wndClass.lpszMenuName = nullptr;
 			wndClass.lpszClassName = windowClassName;
 			wndClass.hIconSm = nullptr;
+			//wndClass.style = CS_DBLCLKS;
 			RegisterClassEx(&wndClass);
 
 			trayHwnd = CreateWindow(
@@ -119,8 +141,10 @@ LRESULT CALLBACK MessageHook(int nCode, WPARAM wParam, LPARAM lParam)
 				nullptr,
 				GetModuleHandle(nullptr),
 				nullptr);
-		}
 
+			// Show tray icon
+			StickTheIconWhereItBelongs(trayHwnd);
+		}
 	}
 
 	if(msg.hwnd == mainHwnd &&
@@ -132,23 +156,7 @@ LRESULT CALLBACK MessageHook(int nCode, WPARAM wParam, LPARAM lParam)
 	{
 		ShowWindow(msg.hwnd, SW_HIDE);
 		// Show tray icon
-		nid.cbSize = sizeof(nid);
-		nid.hWnd = trayHwnd;
-		nid.uID = 1337;
-		nid.uFlags = NIF_ICON | NIF_TIP | NIF_SHOWTIP | NIF_MESSAGE;
-		nid.uCallbackMessage = WM_USER + 1337;
-		nid.hIcon = (HICON)GetClassLongPtr(mainHwnd, GCLP_HICON);
-		lstrcpy(nid.szTip, _T("Mozilla Thunderbird"));
-		nid.dwState = 0;
-		nid.dwStateMask = 0;
-		lstrcpy(nid.szInfo, _T(""));
-		nid.uVersion = NOTIFYICON_VERSION_4;
-		lstrcpy(nid.szInfoTitle, _T(""));
-		nid.dwInfoFlags = 0;
-		nid.guidItem = {};
-		nid.hBalloonIcon = nid.hIcon;
-		Shell_NotifyIcon(NIM_ADD, &nid);
-		Shell_NotifyIcon(NIM_SETVERSION, &nid);
+		StickTheIconWhereItBelongs(trayHwnd);
 		// Ignore this message
 		msg.message = WM_NULL;
 	}
