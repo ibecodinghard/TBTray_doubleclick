@@ -1,4 +1,4 @@
-TBTray - Native Win32 Thunderbird tray icon (with a persistant tray icon)
+TBTray - Native Win32 Thunderbird tray icon (with a persistent tray icon)
 =========================================================================
 
 After the x-th reincarnation of the MinimizeToTray add-on for Thunderbird broke
